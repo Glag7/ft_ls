@@ -1,0 +1,20 @@
+ls [args='.'] [opts]
+
+optimized (fast, qs)
+
+ACL, extended attributes
+
+-R recursive, show total
+-h show sizes with KMGT
+
+-a all files
+-d list directories, not content
+
+-l columns and data
+-g same but no owner, g > l
+
+-r reverse sort
+-t sort by time
+-U do not sort, use directory order
+
+-f aU
