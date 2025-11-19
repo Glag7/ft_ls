@@ -1,39 +1,45 @@
-int	extract_opts(size_t argc, const char **argv, char *opts)
-{
-	static const char	accepted[] = "adfghlrRtU";
+#include "parse_args.h"
 
-	for (size_t i = 1; i < argc; ++i)
-	{
-		const char	*cur = argv[i];
+/*struct :
+recursive bool
 
-		if (cur[0] != '-')
-			continue;
-		if (cur[1] == '-' && cur[2] == '\0')
-			break;
-		for (size_t j = 1; j < ft_strlen(cur); ++j)
-		{
-			if (ft_at(cur[j], accepted) != -1)
-				opts[cur[j]] = 1;
-			else
-			{
-				//bad opt : cur[j]
-				return 2;
-			}
-		}
-	}
-	return 0;
-}
-//si mauvaie opt ou malloc caca return 2
+list directories bool (overrides recursive)(not really since it does not trigger)
+
+show owner
+shwo every other data
+
+sort, funcptr, strcmp, sort by time or do not sort
+reverse sort bool
+
+hidden files bool
+
+human sizes bool
+*/
 
 int	main(int argc, char **argv)
 {
-	char	**args;
+	char	**args = argv;
 	char	opts[255] = {0};
 	int		err;
 
-	err = extract_opts(argc, argv, &opts);
+	err = extract_opts(argc, argv, opts);
 	if (err)
 		return err;
-	printf("caca\n");
+	extract_args(argc, args);
+	//fill some struct with opts
+	//list, sort, format, print
+	
+	//XXX
+	printf("opts\n");
+	for (int i = 0; i < 255; ++i)
+	{
+		if (opts[i])
+			printf("%c\n", i);
+	}
+	printf("args\n");
+	for (int i = 0; args[i]; ++i)
+	{
+		printf("%s\n", args[i]);
+	}
 	return 0;
 }
