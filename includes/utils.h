@@ -14,4 +14,7 @@ void	*ft_memcpy(void *dest, const void *src, size_t n);
 //io
 void	ft_printerr(size_t n, ...);
 
+//sort
+void	ft_qsort_ptr(void *arr_void, size_t count, ssize_t (*cmpfunc)(const void*, const void*));
+
 #endif //UTILS_H

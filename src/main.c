@@ -16,6 +16,8 @@ hidden files bool
 human sizes bool
 */
 
+#include "utils.h"
+
 int	main(int argc, char **argv)
 {
 	char	**args = argv;
