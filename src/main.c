@@ -92,6 +92,21 @@ void	fill_display_opts(const size_t *opts, dopts_t *display_opts)
 
 #include <sys/stat.h>
 
+int	fill_finfo(const char *path, const fopts_t *opts, finfo_t *finfo)
+{
+	//finfo->name must be set
+	if (opts->owner)
+	{
+	}
+	if (opts->data)
+	{
+	}
+	if (opts->dir_as_file)
+	{
+	}
+	return 0;
+}
+
 int	main(int argc, char **argv)
 {
 	char	**args = argv;
