@@ -90,6 +90,8 @@ void	fill_display_opts(const size_t *opts, dopts_t *display_opts)
 		display_opts->cmpfunc = NULL;
 }
 
+#include <sys/stat.h>
+
 int	main(int argc, char **argv)
 {
 	char	**args = argv;
@@ -125,6 +127,12 @@ int	main(int argc, char **argv)
 	for (int i = 0; args[i]; ++i)
 	{
 		printf("%s\n", args[i]);
+		struct stat	wow;
+
+		lstat(args[i], &wow);
+		printf("%llu\n", wow.st_size);
 	}
+	
+
 	return 0;
 }
