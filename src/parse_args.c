@@ -1,9 +1,10 @@
 #include <stddef.h>
 #include "utils.h"
 
-int	extract_opts(size_t argc, char **argv, char *opts)
+int	extract_opts(size_t argc, char **argv, size_t *opts)
 {
 	static const char	accepted[] = "adfghlrRtU";
+	size_t				opt_idx = 0;
 
 	for (size_t i = 1; i < argc; ++i)
 	{
@@ -17,7 +18,7 @@ int	extract_opts(size_t argc, char **argv, char *opts)
 		{
 			unsigned	c = cur[j];
 			if (ft_at(accepted, c) != -1)
-				opts[c] = 1;
+				opts[c] = ++opt_idx;
 			else
 			{
 				char	badopt[2] = {c, 0};
