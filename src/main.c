@@ -23,34 +23,6 @@ human sizes bool
 #include <errno.h>
 #include <stdbool.h>
 
-typedef struct fopts_s
-{
-	bool	hidden;
-	bool	owner;
-	bool	data;
-	bool	dir_as_file;
-}	fopts_t;
-
-typedef struct	finfo_s
-{
-	char				*name;
-	bool				isdir;
-	gid_t				group;
-	uid_t				owner;
-	nlink_t				nlinks;
-	off_t				size;
-	bool				symlink;
-	mode_t				perms;
-	struct timespec		lastmod;
-}	finfo_t;
-
-typedef struct displayopts_s
-{
-	ssize_t (*cmpfunc)(const void*, const void*);
-	bool	columns;
-	bool	humansize;
-}	dopts_t;
-
 /*
 finfo_t	*get_dir(const char *dirname, const fopts_t *opts)
 {
@@ -85,6 +57,8 @@ finfo_t	*get_dir(const char *dirname, const fopts_t *opts)
 //print everything (if -R stop printing to call print_dir again)
 //
 
+#include "opts.h"
+
 void	fill_file_opts(const size_t *opts, fopts_t *file_opts)
 {
 	file_opts->hidden = opts['a'];
@@ -93,6 +67,7 @@ void	fill_file_opts(const size_t *opts, fopts_t *file_opts)
 	file_opts->dir_as_file = opts['d'];
 }
 
+#include "cmp.h"
 void	fill_display_opts(const size_t *opts, dopts_t *display_opts)
 {
 	display_opts->humansize = opts['h'];
@@ -130,7 +105,7 @@ int	main(int argc, char **argv)
 	extract_args(argc, args);
 
 	fill_file_opts(opts, &fopts);
-	fill_display_opts(opts &dopts);
+	fill_display_opts(opts, &dopts);
 
 	//sort les args
 	//return 2 si un des arsg pas accessibles (pas un dossier)
