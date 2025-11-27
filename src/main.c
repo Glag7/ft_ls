@@ -64,6 +64,7 @@ void	fill_file_opts(const size_t *opts, fopts_t *file_opts)
 	file_opts->hidden = opts['a'];
 	file_opts->data = opts['l'] || opts['g'];
 	file_opts->owner = opts['l'] && !opts['g'];
+	file_opts->lastmod = opts['l'] || opts['g'] || opts['t'];
 	file_opts->dir_as_file = opts['d'];
 }
 
@@ -90,20 +91,48 @@ void	fill_display_opts(const size_t *opts, dopts_t *display_opts)
 		display_opts->cmpfunc = NULL;
 }
 
+#include <string.h>
+#include "utils.h"
+#include "fileinfo.h"
 #include <sys/stat.h>
+	bool				symlink;
+	mode_t				perms;
 
-int	fill_finfo(const char *path, const fopts_t *opts, finfo_t *finfo)
+int	fill_finfo(const char *path, char *name, const fopts_t *opts, finfo_t *finfo)
 {
-	//finfo->name must be set
-	if (opts->owner)
+	struct stat	buf;
+
+	finfo->name = name;
+	finfo->isdir = false;
+	finfo->group = (gid_t)-1;
+	finfo->owner = (uid_t)-1;
+	finfo->nlinks = (nlink_t)-1;
+	finfo->size = (off_t)-1;
+	finfo->symlink = false;
+	finfo->perms = (mode_t)-1;
+	finfo->lastmod.tv_sec = (long)-1;
+	finfo->lastmod.tv_nsec = (long)-1;
+	errno = 0;
+	if (lstat(path, &buf))
 	{
+		ft_printerr(3, "cannot get info for file", name, strerror(errno));
+		return -1;
 	}
+	if (opts->owner)
+		finfo->owner = buf.st_uid;
 	if (opts->data)
 	{
+		finfo->group = buf.st_gid;
+		finfo->nlinks = buf.st_nlink;
+		finfo->size = buf.st_size;
+		if (S_ISLNK(buf.st_mode))
+			finfo->symlink = true;
+		finfo->perms = buf.st_mode & ((1 << 10) - 1);
 	}
-	if (opts->dir_as_file)
-	{
-	}
+	if (opts->lastmod)
+		finfo->lastmod = buf.st_mtim;
+	if (!opts->dir_as_file && S_ISDIR(buf.st_mode))
+		finfo->isdir = true;
 	return 0;
 }
 
