@@ -95,8 +95,6 @@ void	fill_display_opts(const size_t *opts, dopts_t *display_opts)
 #include "utils.h"
 #include "fileinfo.h"
 #include <sys/stat.h>
-	bool				symlink;
-	mode_t				perms;
 
 int	fill_finfo(const char *path, char *name, const fopts_t *opts, finfo_t *finfo)
 {
@@ -127,13 +125,22 @@ int	fill_finfo(const char *path, char *name, const fopts_t *opts, finfo_t *finfo
 		finfo->size = buf.st_size;
 		if (S_ISLNK(buf.st_mode))
 			finfo->symlink = true;
-		finfo->perms = buf.st_mode & ((1 << 10) - 1);
+		finfo->perms = buf.st_mode;
 	}
 	if (opts->lastmod)
 		finfo->lastmod = buf.st_mtim;
 	if (!opts->dir_as_file && S_ISDIR(buf.st_mode))
 		finfo->isdir = true;
 	return 0;
+}
+
+//TODO ACL
+void	print_finfo(finfo_t	*finfos, const dopts_t *dopts)
+{
+	//si columns total
+	//toujours en 1 seule colonne lol
+	//sort
+	//sticky bit de merde, set uid, set gid ??
 }
 
 int	main(int argc, char **argv)

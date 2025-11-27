@@ -12,9 +12,8 @@ ACL, extended attributes
 
 -l columns and data
 -g same but no owner, g > l
+-o `` no group
 
 -r reverse sort
 -t sort by time
 -U do not sort, use directory order
-
--f aU
