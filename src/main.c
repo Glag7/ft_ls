@@ -136,13 +136,34 @@ int	fill_finfo(const char *path, char *name, const fopts_t *opts, finfo_t *finfo
 	return 0;
 }
 
+#include <stdlib.h>
+
 //TODO ACL
-void	print_finfo(finfo_t	*finfos, const dopts_t *dopts)
+int	print_finfo(finfo_t	*finfos, size_t n, const dopts_t *dopts)
 {
+	finfo_t	**finfos_ptr = malloc((n + 1) * sizeof(finfos));
+
+	if (finfos_ptr == NULL)
+	{
+		ft_printerr(2, "malloc failed", strerror(errno));
+		return -1;
+	}
+	for (size_t i = 0; i < n; ++i)
+		finfos_ptr[i] = finfos + i;
+	finfos_ptr[n] = NULL;
+	if (dopts->cmpfunc)
+		ft_qsort_ptr(finfos_ptr, n, dopts->cmpfunc);
+
 	//si columns total
 	//toujours en 1 seule colonne lol
 	//sort
 	//sticky bit de merde, set uid, set gid ??
+	for (size_t i = 0; i < n; ++i)
+	{
+		printf("%s\n", finfos_ptr[i]->name);
+	}
+	free(finfos_ptr);
+	return 0;
 }
 
 int	main(int argc, char **argv)
@@ -177,14 +198,17 @@ int	main(int argc, char **argv)
 			printf("%c\n", i);
 	}
 	printf("args\n");
-	for (int i = 0; args[i]; ++i)
+	finfo_t	*files = malloc(1000);
+	int i;
+	for (i = 0; args[i]; ++i)
 	{
+		files[i].name = args[i];
+		fill_finfo(args[i], args[i], &fopts, files + i);
 		printf("%s\n", args[i]);
-		struct stat	wow;
-
-		lstat(args[i], &wow);
-		printf("%llu\n", wow.st_size);
 	}
+	printf("GRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR\n");
+	print_finfo(files, i, &dopts);
+	free(files);
 	
 
 	return 0;
