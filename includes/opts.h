@@ -9,6 +9,7 @@ typedef struct fopts_s
 {
 	bool	hidden;
 	bool	owner;
+	bool	group;
 	bool	lastmod;
 	bool	data;
 	bool	dir_as_file;

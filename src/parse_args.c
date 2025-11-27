@@ -3,7 +3,7 @@
 
 int	extract_opts(size_t argc, char **argv, size_t *opts)
 {
-	static const char	accepted[] = "adfghlrRtU";
+	static const char	accepted[] = "adghlorRtU";
 	size_t				opt_idx = 0;
 
 	for (size_t i = 1; i < argc; ++i)
