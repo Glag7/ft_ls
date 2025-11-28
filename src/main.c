@@ -73,7 +73,7 @@ void	fill_file_opts(const size_t *opts, fopts_t *file_opts)
 void	fill_display_opts(const size_t *opts, dopts_t *display_opts)
 {
 	display_opts->humansize = opts['h'];
-	display_opts->columns = opts['l'] || opts['g'];
+	display_opts->columns = opts['l'] || opts['g'] || opts['o'];
 	if (opts['r'])
 	{
 		if (opts['t'])
@@ -138,6 +138,19 @@ int	fill_finfo(const char *path, char *name, const fopts_t *opts, finfo_t *finfo
 
 #include <stdlib.h>
 
+void	print_line(finfo_t *finfo, const dopts_t *dopts)//paddings ? idk
+{
+	static char	buf[4096];
+
+	size_t	len = ft_strlen(finfo->name);
+
+	ft_memcpy(buf, finfo->name, len);
+	buf[len] = '\n';
+	//where \0
+	write(1, buf, len + 1);
+}
+
+//PADDING
 //TODO ACL
 int	print_finfo(finfo_t	*finfos, size_t n, const dopts_t *dopts)
 {
@@ -160,7 +173,7 @@ int	print_finfo(finfo_t	*finfos, size_t n, const dopts_t *dopts)
 	//sticky bit de merde, set uid, set gid ??
 	for (size_t i = 0; i < n; ++i)
 	{
-		printf("%s\n", finfos_ptr[i]->name);
+		print_line(finfos_ptr[i], dopts);
 	}
 	free(finfos_ptr);
 	return 0;
