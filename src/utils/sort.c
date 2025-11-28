@@ -25,8 +25,7 @@ void	ft_qsort_ptr(void *arr_void, size_t count, ssize_t (*cmpfunc)(const void*, 
 	const void	*pivot = arr[count / 2];
 	size_t		pivot_idx = 0;
 
-	if (arr[count - 1] < arr[count / 2])
-		ft_swap(arr + count / 2, arr + count - 1);
+	ft_swap(arr + count / 2, arr + count - 1);
 	for (size_t i = 0; i < count -1; ++i)
 	{
 		if (cmpfunc(arr[i], pivot) <= 0)
