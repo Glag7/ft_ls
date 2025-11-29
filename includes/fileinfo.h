@@ -1,6 +1,7 @@
 #ifndef FILEINFO_H
 # define FILEINFO_H
 
+#include <stdint.h>
 #include <sys/types.h>
 #include <dirent.h>
 #include <stdbool.h>
@@ -17,5 +18,16 @@ typedef struct	finfo_s
 	mode_t				perms;
 	struct timespec		lastmod;
 }	finfo_t;
+
+typedef struct	displayinfo_s
+{
+	uint8_t		permlen;
+	uint8_t		nlinklen;
+	uint8_t		userlen;
+	uint8_t		grouplen;
+	uint8_t		sizelen;
+	uint8_t		namelen;
+	uint16_t	symlinklen;
+}	dinfo_t;
 
 #endif //FILEINFO_H
