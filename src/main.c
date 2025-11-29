@@ -106,6 +106,11 @@ void	print_line(finfo_t *finfo, const dopts_t *dopts)//paddings ? idk
 	static char	buf[4096];
 
 	size_t	len = ft_strlen(finfo->name);
+	
+	if (dopts->columns)
+	{
+		printf("%s\n", finfo->perms);
+	}
 
 	ft_memcpy(buf, finfo->name, len);
 	buf[len] = '\n';

@@ -31,7 +31,7 @@ MSG_READY = "$(BLUE)$(BOLD)$(NAME) ready$(NOBOLD)$(NOCOLOR)";
 all : $(NAME)
 
 $(NAME) : $(OBJ)
-	@$(COMP) $(CFLAGS) $(OBJ) -I $(HDR_DIR) -o $(NAME)
+	@$(COMP) $(CFLAGS) $(OBJ) -I $(HDR_DIR) -o $(NAME) -lacl
 	@echo -n $(DEL)
 	@echo $(MSG_READY)
 

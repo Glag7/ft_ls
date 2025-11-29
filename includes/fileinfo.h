@@ -9,13 +9,13 @@
 typedef struct	finfo_s
 {
 	char				*name;
+	char				perms[12];
 	bool				isdir;
 	gid_t				group;
 	uid_t				owner;
 	nlink_t				nlinks;
 	off_t				size;
 	bool				symlink;
-	mode_t				perms;
 	struct timespec		lastmod;
 }	finfo_t;
 
