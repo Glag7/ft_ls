@@ -104,6 +104,16 @@ static int	fill_group(char *buf, gid_t group, char *filename)
 	return 0;
 }
 
+static void	fill_dinfo(finfo_t *finfo, dinfo_t *dinfo)
+{
+	dinfo->permlen = ft_strlen(finfo->perms);
+	dinfo->nlinklen = ft_numlen(finfo->nlinks);
+	dinfo->userlen = ft_strlen(finfo->owner);
+	dinfo->grouplen = ft_strlen(finfo->group);
+	dinfo->sizelen = ft_numlen(finfo->size);
+	dinfo->namelen = ft_strlen(finfo->name);
+}
+
 int	fill_finfo(const char *path, char *name, const fopts_t *opts, finfo_t *finfo)
 {
 	struct stat	buf;
@@ -141,12 +151,22 @@ int	fill_finfo(const char *path, char *name, const fopts_t *opts, finfo_t *finfo
 		finfo->lastmod = buf.st_mtim;
 	if (!opts->dir_as_file && S_ISDIR(buf.st_mode))
 		finfo->isdir = true;
+	fill_dinfo(finfo, &finfo->dinfo);
 	return err;
 }
 
-void	update_dinfo(dinfo_t *dinfo, const finfo_t *finfo)
+void	update_dinfo(dinfo_t *max_dinfo, const dinfo_t *file_dinfo)
 {
-	size_t	len;
-
-	len = ft_strlen(finfo->name);
+	if (file_dinfo->permlen > max_dinfo->permlen)
+		max_dinfo->permlen = file_dinfo->permlen;
+	if (file_dinfo->nlinklen > max_dinfo->nlinklen)
+		max_dinfo->nlinklen = file_dinfo->nlinklen;
+	if (file_dinfo->userlen > max_dinfo->userlen)
+		max_dinfo->userlen = file_dinfo->userlen;
+	if (file_dinfo->grouplen > max_dinfo->grouplen)
+		max_dinfo->grouplen = file_dinfo->grouplen;
+	if (file_dinfo->sizelen > max_dinfo->sizelen)
+		max_dinfo->sizelen = file_dinfo->sizelen;
+	if (file_dinfo->namelen > max_dinfo->namelen)
+		max_dinfo->namelen = file_dinfo->namelen;
 }

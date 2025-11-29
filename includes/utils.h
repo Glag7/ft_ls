@@ -8,6 +8,9 @@
 size_t	ft_strlen(const char *s);
 ssize_t	ft_at(const char *s, char c);
 
+//num
+size_t	ft_numlen(size_t num);
+
 //mem
 void	*ft_memcpy(void *dest, const void *src, size_t n);
 

@@ -190,11 +190,14 @@ int	main(int argc, char **argv)
 	}
 	printf("args\n");
 	finfo_t	*files = malloc(1000);
+	dinfo_t	max_dinfo = {0};
+
 	int i;
 	for (i = 0; args[i]; ++i)
 	{
 		files[i].name = args[i];
 		fill_finfo(args[i], args[i], &fopts, files + i);//returns 1 if minor error, 2 if no stat
+		update_dinfo(&max_dinfo, &files[i].dinfo);
 		printf("%s\n", args[i]);
 	}
 	printf("GRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR\n");
