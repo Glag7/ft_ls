@@ -153,6 +153,8 @@ int	print_finfo(finfo_t	*finfos, size_t n, const dopts_t *dopts)
 	return 0;
 }
 
+//TODO un seul buffer de fileinfo de malloc, le free a la fin et le realloc si besoin
+
 int	main(int argc, char **argv)
 {
 	char	**args = argv;

@@ -4,6 +4,8 @@
 #include <sys/acl.h>
 #include <errno.h>
 #include <string.h>
+#include <pwd.h>
+#include <grp.h>
 #include "utils.h"
 #include "opts.h"
 #include "fileinfo.h"
@@ -70,15 +72,48 @@ static void	fill_perms(const char *path, char *perms, mode_t mode)
 	perms[11] = '\0';
 }
 
+static int	fill_owner(char *buf, uid_t owner, char *filename)
+{
+	struct passwd	*user;
+
+	errno = 0;
+	user = getpwuid(owner);
+	if (user == NULL)
+	{
+		buf[0] = '\0';
+		ft_printerr(3, "cannot access owner for", filename, strerror(errno));
+		return 1;
+	}
+	ft_memcpy(buf, user->pw_name, ft_strlen(user->pw_name) + 1);
+	return 0;
+}
+
+static int	fill_group(char *buf, gid_t group, char *filename)
+{
+	struct group	*grp_struct;
+	
+	errno = 0;
+	grp_struct = getgrgid(group);
+	if (grp_struct == NULL)
+	{
+		buf[0] = '\0';
+		ft_printerr(3, "cannot access owner for", filename, strerror(errno));
+		return 1;
+	}
+	ft_memcpy(buf, grp_struct->gr_name, ft_strlen(grp_struct->gr_name) + 1);
+	return 0;
+}
+
 int	fill_finfo(const char *path, char *name, const fopts_t *opts, finfo_t *finfo)
 {
 	struct stat	buf;
+	int			err = 0;
 
 	finfo->name = name;
-	finfo->perms[0] = 0;//nuhuh
+	finfo->perms[0] = 0;
 	finfo->isdir = false;
-	finfo->group = (gid_t)-1;
-	finfo->owner = (uid_t)-1;
+	finfo->group[0] = 0;
+	finfo->owner[0] = 0;
 	finfo->nlinks = (nlink_t)-1;
 	finfo->size = (off_t)-1;
 	finfo->symlink = false;
@@ -88,12 +123,12 @@ int	fill_finfo(const char *path, char *name, const fopts_t *opts, finfo_t *finfo
 	if (lstat(path, &buf))
 	{
 		ft_printerr(3, "cannot get info for file", name, strerror(errno));
-		return -1;
+		return 2;
 	}
 	if (opts->owner)
-		finfo->owner = buf.st_uid;
+		err |= fill_owner(finfo->owner, buf.st_uid, name);
 	if (opts->group)
-		finfo->group = buf.st_gid;
+		err |= fill_group(finfo->group, buf.st_gid, name);
 	if (opts->data)
 	{
 		finfo->nlinks = buf.st_nlink;
@@ -106,5 +141,5 @@ int	fill_finfo(const char *path, char *name, const fopts_t *opts, finfo_t *finfo
 		finfo->lastmod = buf.st_mtim;
 	if (!opts->dir_as_file && S_ISDIR(buf.st_mode))
 		finfo->isdir = true;
-	return 0;
+	return err;
 }

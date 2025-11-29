@@ -11,8 +11,8 @@ typedef struct	finfo_s
 	char				*name;
 	char				perms[12];
 	bool				isdir;
-	gid_t				group;
-	uid_t				owner;
+	char				group[33];
+	char				owner[33];
 	nlink_t				nlinks;
 	off_t				size;
 	bool				symlink;
@@ -27,7 +27,6 @@ typedef struct	displayinfo_s
 	uint8_t		grouplen;
 	uint8_t		sizelen;
 	uint8_t		namelen;
-	uint16_t	symlinklen;
 }	dinfo_t;
 
 #endif //FILEINFO_H
