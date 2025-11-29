@@ -143,3 +143,10 @@ int	fill_finfo(const char *path, char *name, const fopts_t *opts, finfo_t *finfo
 		finfo->isdir = true;
 	return err;
 }
+
+void	update_dinfo(dinfo_t *dinfo, const finfo_t *finfo)
+{
+	size_t	len;
+
+	len = ft_strlen(finfo->name);
+}

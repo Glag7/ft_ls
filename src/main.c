@@ -155,6 +155,8 @@ int	print_finfo(finfo_t	*finfos, size_t n, const dopts_t *dopts)
 
 //TODO un seul buffer de fileinfo de malloc, le free a la fin et le realloc si besoin
 
+#include "manage_finfo.h"
+
 int	main(int argc, char **argv)
 {
 	char	**args = argv;
@@ -192,13 +194,13 @@ int	main(int argc, char **argv)
 	for (i = 0; args[i]; ++i)
 	{
 		files[i].name = args[i];
-		fill_finfo(args[i], args[i], &fopts, files + i);
+		fill_finfo(args[i], args[i], &fopts, files + i);//returns 1 if minor error, 2 if no stat
 		printf("%s\n", args[i]);
 	}
 	printf("GRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR\n");
 	print_finfo(files, i, &dopts);
 	free(files);
 	
-
+	printf("%lu %lu\n", sizeof(finfo_t), sizeof(off_t));
 	return 0;
 }

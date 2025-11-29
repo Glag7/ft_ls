@@ -6,19 +6,6 @@
 #include <dirent.h>
 #include <stdbool.h>
 
-typedef struct	finfo_s
-{
-	char				*name;
-	char				perms[12];
-	bool				isdir;
-	char				group[33];
-	char				owner[33];
-	nlink_t				nlinks;
-	off_t				size;
-	bool				symlink;
-	struct timespec		lastmod;
-}	finfo_t;
-
 typedef struct	displayinfo_s
 {
 	uint8_t		permlen;
@@ -28,5 +15,19 @@ typedef struct	displayinfo_s
 	uint8_t		sizelen;
 	uint8_t		namelen;
 }	dinfo_t;
+
+typedef struct	finfo_s
+{
+	char				*name;
+	struct timespec		lastmod;
+	nlink_t				nlinks;
+	off_t				size;
+	dinfo_t				dinfo;
+	bool				isdir;
+	bool				symlink;
+	char				group[33];
+	char				owner[33];
+	char				perms[12];
+}	finfo_t;
 
 #endif //FILEINFO_H

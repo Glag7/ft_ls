@@ -1,0 +1,6 @@
+#ifndef MANAGE_FINFO_H
+# define MANAGE_FINFO_H
+
+int	fill_finfo(const char *path, char *name, const fopts_t *opts, finfo_t *finfo);
+
+#endif //MANAGE_FINFO_H
