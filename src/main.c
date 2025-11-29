@@ -100,22 +100,34 @@ void	fill_display_opts(const size_t *opts, dopts_t *display_opts)
 
 #include <stdlib.h>
 
-//date always same type
-void	print_line(finfo_t *finfo, const dopts_t *dopts)//paddings ? idk
-{
-	static char	buf[4096];
-
-	size_t	len = ft_strlen(finfo->name);
+void	print_line(finfo_t *finfo, const dopts_t *dopts, const dinfo_t *max_dinfo)
+{//TODO humansize
+	static char		buf[8192];
+	const dinfo_t	*file_dinfo = &finfo->dinfo;
+	size_t			i = 0;
 	
-	if (dopts->columns)
+	if (dopts->columns)//kind of useless
 	{
-		printf("%s\n", finfo->perms);
+		ft_memcpy(buf + i, finfo->perms, file_dinfo->permlen);
+		i += file_dinfo->permlen;
+		buf[i++] = ' ';//memset with max_dinfo
+		//hard links
+		ft_memcpy(buf + i, finfo->owner, file_dinfo->userlen);
+		i += file_dinfo->userlen;
+		buf[i++] = ' ';//XXX
+		ft_memcpy(buf + i, finfo->group, file_dinfo->grouplen);
+		i += file_dinfo->grouplen;
+		buf[i++] = ' ';//XXX
+		//size
+		//date
 	}
 
-	ft_memcpy(buf, finfo->name, len);
-	buf[len] = '\n';
+	ft_memcpy(buf + i, finfo->name, file_dinfo->namelen);
+	i += file_dinfo->namelen;
+	//symlink
+	buf[i] = '\n';
 	//where \0
-	write(1, buf, len + 1);
+	write(1, buf, i + 1);
 }
 
 //PADDING
@@ -126,11 +138,11 @@ void	print_line(finfo_t *finfo, const dopts_t *dopts)//paddings ? idk
 //c character device
 //l link
 //s socket
-int	print_finfo(finfo_t	*finfos, size_t n, const dopts_t *dopts)
+int	print_finfo(finfo_t	*finfos, size_t n, const dopts_t *dopts, const dinfo_t *max_dinfo)
 {
 	finfo_t	**finfos_ptr = malloc((n + 1) * sizeof(finfos));
 
-	if (finfos_ptr == NULL)
+	if (finfos_ptr == NULL)//keep this malloc for the entire program too ? XXX
 	{
 		ft_printerr(2, "malloc failed", strerror(errno));
 		return -1;
@@ -147,7 +159,7 @@ int	print_finfo(finfo_t	*finfos, size_t n, const dopts_t *dopts)
 	//sticky bit de merde, set uid, set gid ??
 	for (size_t i = 0; i < n; ++i)
 	{
-		print_line(finfos_ptr[i], dopts);
+		print_line(finfos_ptr[i], dopts, max_dinfo);
 	}
 	free(finfos_ptr);
 	return 0;
@@ -201,7 +213,7 @@ int	main(int argc, char **argv)
 		printf("%s\n", args[i]);
 	}
 	printf("GRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR\n");
-	print_finfo(files, i, &dopts);
+	print_finfo(files, i, &dopts, &max_dinfo);
 	free(files);
 	
 	printf("%lu %lu\n", sizeof(finfo_t), sizeof(off_t));
