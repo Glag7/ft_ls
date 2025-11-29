@@ -1,5 +1,14 @@
 #include <stddef.h>
 
+void	ft_fillnum(char *s, size_t num, size_t numlen)
+{
+	for (size_t i = numlen; i > 0;)
+	{
+		s[--i] = num % 10 + '0';
+		num /= 10;
+	}
+}
+
 size_t	ft_numlen(size_t num)
 {
 	if (num < 10ULL)

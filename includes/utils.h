@@ -10,6 +10,7 @@ ssize_t	ft_at(const char *s, char c);
 
 //num
 size_t	ft_numlen(size_t num);
+void	ft_fillnum(char *s, size_t num, size_t numlen);
 
 //mem
 void	*ft_memcpy(void *dest, const void *src, size_t n);

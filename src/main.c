@@ -99,9 +99,12 @@ void	fill_display_opts(const size_t *opts, dopts_t *display_opts)
 
 
 #include <stdlib.h>
+#include <time.h>
+
+#include <unistd.h>
 
 void	print_line(finfo_t *finfo, const dopts_t *dopts, const dinfo_t *max_dinfo)
-{//TODO humansize
+{	
 	static char		buf[8192];
 	const dinfo_t	*file_dinfo = &finfo->dinfo;
 	size_t			i = 0;
@@ -111,20 +114,46 @@ void	print_line(finfo_t *finfo, const dopts_t *dopts, const dinfo_t *max_dinfo)
 		ft_memcpy(buf + i, finfo->perms, file_dinfo->permlen);
 		i += file_dinfo->permlen;
 		buf[i++] = ' ';//memset with max_dinfo
-		//hard links
+		ft_fillnum(buf + i, finfo->nlinks, file_dinfo->nlinklen);
+		i += file_dinfo->nlinklen;
+		buf[i++] = ' ';//XXX
 		ft_memcpy(buf + i, finfo->owner, file_dinfo->userlen);
-		i += file_dinfo->userlen;
+		i += file_dinfo->userlen;//FIXME dont print if 0, same for group
 		buf[i++] = ' ';//XXX
 		ft_memcpy(buf + i, finfo->group, file_dinfo->grouplen);
 		i += file_dinfo->grouplen;
 		buf[i++] = ' ';//XXX
-		//size
+		//TODO humansize (doit etre fait avant) (<=4)
+		ft_fillnum(buf + i, finfo->size, file_dinfo->sizelen);
+		i += file_dinfo->sizelen;
+		buf[i++] = ' ';//XXX
+		
+		char *test = ctime(&finfo->lastmod.tv_sec);//can fail but not really
+		size_t	len = ft_strlen(test) - 13;
+
+		ft_memcpy(buf + i, test + 4, len);
+		i += len;
+		buf[i++] = ' ';//XXX
 		//date
 	}
 
 	ft_memcpy(buf + i, finfo->name, file_dinfo->namelen);
 	i += file_dinfo->namelen;
-	//symlink
+	if (dopts->columns && finfo->symlink)//XXX maybe ill need the full path
+	{
+		buf[i++] = ' ';
+		buf[i++] = '-';
+		buf[i++] = '>';
+		buf[i++] = ' ';
+		ssize_t	res = readlink(finfo->name, buf + i, sizeof(buf) - i);
+		if (res == -1)
+		{
+			//msg cant follow symlink boohoo
+			i -= 4;
+		}
+		else
+			i += res;
+	}
 	buf[i] = '\n';
 	//where \0
 	write(1, buf, i + 1);
@@ -169,7 +198,7 @@ int	print_finfo(finfo_t	*finfos, size_t n, const dopts_t *dopts, const dinfo_t *
 
 #include "manage_finfo.h"
 
-int	main(int argc, char **argv)
+int	main(int argc, char **argv)//FIXME symlinks are followed for args (if no columns)
 {
 	char	**args = argv;
 	size_t	opts[255] = {0};
