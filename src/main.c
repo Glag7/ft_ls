@@ -194,42 +194,33 @@ int	print_finfo(finfo_t	*finfos, size_t n, const dopts_t *dopts, const dinfo_t *
 	return 0;
 }
 
+//plusieurs args si dossier mettre le nom
+
 //TODO un seul buffer de fileinfo de malloc, le free a la fin et le realloc si besoin
 
 #include "manage_finfo.h"
 
 int	main(int argc, char **argv)//FIXME symlinks are followed for args (if no columns)
 {
-	char	**args = argv;
-	size_t	opts[255] = {0};
-	int		err;
-
-	fopts_t	fopts;
-	dopts_t	dopts;
+	static char	path[131072];
+	char		**args = argv;
+	size_t		opts[255] = {0};
+	size_t		nargs;
+	int			err;
+	fopts_t		fopts;
+	dopts_t		dopts;
 
 	err = extract_opts(argc, argv, opts);
 	if (err)
 		return err;
-	extract_args(argc, args);
-
+	nargs = extract_args(argc, args);
+	printf("THERE ARE %llu args\n", nargs);
 	fill_file_opts(opts, &fopts);
 	fill_display_opts(opts, &dopts);
 
 	//sort les args
 	//return 2 si un des arsg pas accessibles (pas un dossier)
 	//return 1 si erreur mineure (subfolder)
-
-	//fill some struct with opts
-	//list, sort, format, print
-	
-	//XXX
-	printf("opts\n");
-	for (int i = 0; i < 255; ++i)
-	{
-		if (opts[i])
-			printf("%c\n", i);
-	}
-	printf("args\n");
 	finfo_t	*files = malloc(1000);
 	dinfo_t	max_dinfo = {0};
 

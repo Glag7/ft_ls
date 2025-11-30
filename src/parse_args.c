@@ -30,7 +30,7 @@ int	extract_opts(size_t argc, char **argv, size_t *opts)
 	return 0;
 }
 
-void	extract_args(size_t argc, char **args)
+size_t	extract_args(size_t argc, char **args)
 {
 	static char	default_arg[] = ".";
 	size_t		write_idx = 0;
@@ -59,7 +59,9 @@ void	extract_args(size_t argc, char **args)
 	{
 		args[0] = default_arg;
 		args[1] = NULL;
+		return 1;
 	}
 	else
 		ft_memcpy(args + write_idx, args + read_idx, (argc - write_idx) * sizeof(char *));
+	return argc - (read_idx - write_idx);
 }
