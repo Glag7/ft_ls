@@ -22,4 +22,7 @@ typedef struct displayopts_s
 	bool	humansize;
 }	dopts_t;
 
+void	fill_file_opts(const size_t *opts, fopts_t *file_opts);
+void	fill_display_opts(const size_t *opts, dopts_t *display_opts);
+
 #endif //OPTS_H
