@@ -133,8 +133,13 @@ int	fill_finfo_arg(const char *path, char *name, const fopts_t *opts, finfo_t *f
 		finfo->symlink = true;
 	if (opts->lastmod)
 		finfo->lastmod = buf.st_mtim;
-	if (!opts->dir_as_file && S_ISDIR(buf.st_mode))
-		finfo->isdir = true;
+	if (!opts->dir_as_file)
+	{
+		if (finfo->symlink && stat(path, &buf))
+			return 0;
+		if (S_ISDIR(buf.st_mode))
+			finfo->isdir = true;
+	}
 	return 0;
 }
 

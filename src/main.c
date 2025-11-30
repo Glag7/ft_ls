@@ -43,7 +43,7 @@ int	list_args(char **args, size_t nargs, const fopts_t *fopts, const dopts_t *do
 			err = 2;
 			continue;
 		}
-		if (dirs[ndirs].isdir && !(dopts->columns && dirs[ndirs].symlink))
+		if (dirs[ndirs].isdir && (!dopts->columns || !dirs[ndirs].symlink))
 			ndirs++;
 		else
 			files[nfiles++] = dirs[ndirs];
@@ -53,7 +53,8 @@ int	list_args(char **args, size_t nargs, const fopts_t *fopts, const dopts_t *do
 	if (ret != 2)
 	{
 		err |= ret;
-		err |= list_dirs(recursive);
+		if (ndirs)
+			err |= list_dirs(recursive);
 	}
 	free(files);
 	free(dirs);
