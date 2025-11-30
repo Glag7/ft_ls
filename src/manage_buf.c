@@ -1,5 +1,7 @@
 #include <stdlib.h>
 #include <stddef.h>
+#include <errno.h>
+#include <stdlib.h>
 #include "fileinfo.h"
 #include "utils.h"
 
@@ -20,6 +22,7 @@ finfo_t	*get_finfo_buf(size_t size)
 	tmp = malloc(size * sizeof(finfo_t));
 	if (tmp == NULL)
 	{
+		ft_printerr(2, "malloc failed", strerror(errno));
 		free(buf);
 		buf = NULL;
 		cursize = 0;
@@ -51,6 +54,7 @@ finfo_t	**get_finfoptr_buf(size_t size)
 	tmp = malloc(size * sizeof(finfo_t *));
 	if (tmp == NULL)
 	{
+		ft_printerr(2, "malloc failed", strerror(errno));
 		free(buf);
 		buf = NULL;
 		cursize = 0;
