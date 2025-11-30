@@ -100,5 +100,6 @@ int	list_dir_entries(char *path, size_t pathlen, const fopts_t *fopts, const dop
 	print_finfo(path, pathlen, finfos_ptr, nfile, dopts, &max_dinfo);
 	return 0;
 }
-
+//TODO recursion, ajouter une queue de char * a aller check ?
+//TODO block size
 //list subdirs that returns 1 ?
