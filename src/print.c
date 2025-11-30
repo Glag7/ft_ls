@@ -7,6 +7,7 @@
 #include "fileinfo.h"
 #include "manage_finfo.h"
 #include "utils.h"
+#include "manage_dir.h"
 
 static void	print_line(const char *path, finfo_t *finfo,
 						const dopts_t *dopts, const dinfo_t *max_dinfo)
@@ -88,31 +89,29 @@ int	print_finfo_args(finfo_t *files, size_t nfiles, const fopts_t *fopts, const 
 	return err;
 }
 
-//plusieurs args si dossier mettre le nom
-//TODO un seul buffer de fileinfo de malloc, le free a la fin et le realloc si besoin
-int	print_finfo(finfo_t	*finfos, size_t n, const dopts_t *dopts, const dinfo_t *max_dinfo)
+//need path, update it with filename
+int	print_finfo(char *path, size_t pathlen, finfo_t	**finfos_ptr, size_t n, const dopts_t *dopts,
+			const dinfo_t *max_dinfo)
 {
-	finfo_t	**finfos_ptr = malloc((n + 1) * sizeof(finfos));
+	static char	buf[255];
+	size_t		tot_size = 0;
 
-	if (finfos_ptr == NULL)//keep this malloc for the entire program too ? XXX
+	if (dopts->columns)
 	{
-		ft_printerr(2, "malloc failed", strerror(errno));
-		return -1;
+		size_t	sizelen = ft_numlen(tot_size);
+
+		for (size_t i = 0; i < n; ++i)
+			tot_size += finfos_ptr[i]->size;
+		ft_memcpy(buf, "total ", 6);
+		ft_fillnum(buf + 7, tot_size, sizelen);
+		buf[7 + sizelen] = '\n';
+		write(1, buf, 8 + sizelen);
 	}
 	for (size_t i = 0; i < n; ++i)
-		finfos_ptr[i] = finfos + i;
-	finfos_ptr[n] = NULL;
-	if (dopts->cmpfunc)
-		ft_qsort_ptr(finfos_ptr, n, dopts->cmpfunc);
-
-	//si columns total
-	//toujours en 1 seule colonne lol
-	//sort
-	//sticky bit de merde, set uid, set gid ??
-	for (size_t i = 0; i < n; ++i)
 	{
-		print_line("", finfos_ptr[i], dopts, max_dinfo);
+		append_filename(path, pathlen, finfos_ptr[i]->name);
+		print_line(path, finfos_ptr[i], dopts, max_dinfo);
+		path[pathlen] = '\0';
 	}
-	free(finfos_ptr);
 	return 0;
 }

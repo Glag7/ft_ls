@@ -18,7 +18,7 @@ typedef struct	displayinfo_s
 
 typedef struct	finfo_s
 {
-	char				*name;
+	char				name[256];
 	struct timespec		lastmod;
 	nlink_t				nlinks;
 	off_t				size;

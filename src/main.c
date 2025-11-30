@@ -1,6 +1,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <unistd.h>
 #include "manage_finfo.h"
 #include "parse_args.h"
 #include "opts.h"
@@ -30,7 +31,7 @@ static int	list_dirs(finfo_t *dirs, size_t ndirs, const fopts_t *fopts, const do
 	{
 		size_t	len = ft_strlen(dir_ptr[i]->name);
 
-		ft_memcpy(path, dir_ptr[i]->name, len);
+		ft_memcpy(path, dir_ptr[i]->name, len + 1);
 		err |= list_dir_entries(path, len, fopts, dopts, ndirs > 1, recursive);
 		if (err & 4)//malloc error yes i should use a macro
 			break;
@@ -79,7 +80,7 @@ static int	list_args(char **args, size_t nargs, const fopts_t *fopts, const dopt
 	{
 		err |= ret;
 		if (ndirs)
-			err |= list_dirs(dirs, ndirs, dopts, dopts, recursive);
+			err |= list_dirs(dirs, ndirs, fopts, dopts, recursive);
 	}
 	free(files);
 	free(dirs);

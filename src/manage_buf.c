@@ -46,7 +46,7 @@ finfo_t	*get_finfo_buf(size_t size)
 		fbuf->finfo_buf = NULL;
 		fbuf->finfo_size = 0;
 	}
-	if (fbuf->finfo_size <= size)
+	if (fbuf->finfo_size >= size)
 		return fbuf->finfo_buf;
 	tmp = malloc(size * sizeof(finfo_t));
 	if (tmp == NULL)
@@ -77,7 +77,7 @@ finfo_t	**get_finfoptr_buf(size_t size)
 		fbuf->finfoptr_buf = NULL;
 		fbuf->finfoptr_size = 0;
 	}
-	if (fbuf->finfoptr_size <= size)
+	if (fbuf->finfoptr_size >= size)
 		return fbuf->finfoptr_buf;
 	tmp = malloc(size * sizeof(finfo_t *));
 	if (tmp == NULL)

@@ -125,7 +125,7 @@ int	fill_finfo_arg(const char *path, char *name, const fopts_t *opts, finfo_t *f
 {
 	struct stat	buf;
 
-	finfo->name = name;
+	ft_memcpy(finfo->name, name, ft_strlen(name) + 1);
 	finfo->isdir = false;
 	finfo->symlink = false;
 	finfo->lastmod.tv_sec = (long)-1;
@@ -155,7 +155,7 @@ int	fill_finfo(const char *path, char *name, const fopts_t *opts, finfo_t *finfo
 	struct stat	buf;
 	int			err = 0;
 
-	finfo->name = name;
+	ft_memcpy(finfo->name, name, ft_strlen(name) + 1);
 	finfo->perms[0] = 0;
 	finfo->isdir = false;
 	finfo->group[0] = 0;
