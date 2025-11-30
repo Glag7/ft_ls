@@ -5,6 +5,7 @@
 #include "parse_args.h"
 #include "opts.h"
 #include "fileinfo.h"
+#include "manage_buf.h"
 
 //return 2 if dir cant be opened (make a func list subdirs that returns 1)
 int	list_dirs(bool recursive)
@@ -66,11 +67,15 @@ int	main(int argc, char **argv)
 	size_t		nargs;
 	fopts_t		fopts;
 	dopts_t		dopts;
+	int			ret;
 
 	if (extract_opts(argc, argv, opts))
 		return 2;
 	nargs = extract_args(argc, args);
 	fill_file_opts(opts, &fopts);
 	fill_display_opts(opts, &dopts);
-	return list_args(args, nargs, &fopts, &dopts, opts['R']);
+	ret = list_args(args, nargs, &fopts, &dopts, opts['R']);
+	get_finfo_buf(0);
+	get_finfoptr_buf(0);
+	return ret;
 }
