@@ -89,6 +89,7 @@ int	print_finfo_args(finfo_t *files, size_t nfiles, const fopts_t *fopts, const 
 	return err;
 }
 
+//need path, update it with filename
 int	print_finfo(char *path, size_t pathlen, finfo_t	**finfos_ptr, size_t n, const dopts_t *dopts,
 			const dinfo_t *max_dinfo)
 {
