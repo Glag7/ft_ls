@@ -2,21 +2,11 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
+#include <stdlib.h>
 #include "opts.h"
 #include "fileinfo.h"
+#include "manage_finfo.h"
 #include "utils.h"
-
-int	print_finfo_args()
-{
-//	finfo_t		*files_ptr = malloc(nargs * sizeof(finfo_t *));
-//	dinfo_t		max_dinfo = {0};
-//
-//			//treat as file
-//			ret = fill_finfo(args[i], args[i], &fopts, files + i);
-//			//update_dinfo(&max_dinfo, &files[i].dinfo);//XXX
-//	if (dopts->cmpfunc)
-//		ft_qsort_ptr(files_ptr, , dopts->cmpfunc);
-}
 
 void	print_line(finfo_t *finfo, const dopts_t *dopts, const dinfo_t *max_dinfo)
 {	
@@ -74,6 +64,28 @@ void	print_line(finfo_t *finfo, const dopts_t *dopts, const dinfo_t *max_dinfo)
 	write(1, buf, i + 1);
 }
 //plusieurs args si dossier mettre le nom
+
+int	print_finfo_args(finfo_t *files, size_t nfiles, const fopts_t *fopts, const dopts_t *dopts)
+{
+	dinfo_t		max_dinfo = {0};
+	finfo_t		**files_ptr = malloc(nfiles * sizeof(finfo_t *));
+	int			err = 0;
+
+	if (files_ptr == NULL)
+		return 2;
+	for (size_t i = 0; i < nfiles; ++i)
+	{
+		files_ptr[i] = files + i;
+		err |= fill_finfo(files[i].name, files[i].name, fopts, files + i);
+		update_dinfo(&max_dinfo, &files[i].dinfo);
+	}
+	if (dopts->cmpfunc)
+		ft_qsort_ptr(files_ptr, nfiles, dopts->cmpfunc);
+	for (size_t i = 0; i < nfiles; ++i)
+		print_line(files_ptr[i], dopts, &max_dinfo);
+	free(files_ptr);
+	return err;
+}
 
 //TODO un seul buffer de fileinfo de malloc, le free a la fin et le realloc si besoin
 int	print_finfo(finfo_t	*finfos, size_t n, const dopts_t *dopts, const dinfo_t *max_dinfo)

@@ -6,6 +6,8 @@
 #include "opts.h"
 #include "fileinfo.h"
 #include "manage_buf.h"
+#include "print.h"
+#include "utils.h"
 
 //return 2 if dir cant be opened (make a func list subdirs that returns 1)
 int	list_dirs(bool recursive)
@@ -17,7 +19,7 @@ int	list_dirs(bool recursive)
 	return 0;
 }
 
-int	list_args(char **args, size_t nargs, fopts_t *fopts, dopts_t *dopts, bool recursive)
+int	list_args(char **args, size_t nargs, const fopts_t *fopts, const dopts_t *dopts, bool recursive)
 {
 	finfo_t		*files = malloc(nargs * sizeof(finfo_t));
 	finfo_t		*dirs = malloc(nargs * sizeof(finfo_t));
@@ -47,7 +49,7 @@ int	list_args(char **args, size_t nargs, fopts_t *fopts, dopts_t *dopts, bool re
 			files[nfiles++] = dirs[ndirs];
 	}
 	if (nfiles)
-		ret = print_finfo_args();
+		ret = print_finfo_args(files, nfiles, fopts, dopts);
 	if (ret != 2)
 	{
 		err |= ret;

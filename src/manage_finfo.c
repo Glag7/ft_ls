@@ -135,7 +135,6 @@ int	fill_finfo_arg(const char *path, char *name, const fopts_t *opts, finfo_t *f
 		finfo->lastmod = buf.st_mtim;
 	if (!opts->dir_as_file && S_ISDIR(buf.st_mode))
 		finfo->isdir = true;
-	fill_dinfo(finfo, &finfo->dinfo);
 	return 0;
 }
 
