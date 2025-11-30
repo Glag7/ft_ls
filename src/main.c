@@ -32,7 +32,7 @@ static int	list_dirs(finfo_t *dirs, size_t ndirs, const fopts_t *fopts, const do
 		size_t	len = ft_strlen(dir_ptr[i]->name);
 
 		ft_memcpy(path, dir_ptr[i]->name, len + 1);
-		err |= list_dir_entries(path, len, fopts, dopts, ndirs > 1, recursive);
+		err |= list_dir_entries(path, len, fopts, dopts, ndirs > 1 || recursive, recursive);
 		if (err & 4)//malloc error yes i should use a macro
 			break;
 		if (i != ndirs - 1)

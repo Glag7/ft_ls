@@ -19,7 +19,8 @@ void	append_filename(char *path, size_t pathlen, char *filename)
 	ft_memcpy(path + pathlen, filename, ft_strlen(filename) + 1);
 }
 
-static finfo_t	*get_dir(char *path, size_t pathlen, const fopts_t *opts, size_t *nfile_ptr)
+static finfo_t	*get_dir(char *path, size_t pathlen, const fopts_t *opts, size_t *nfile_ptr,
+				size_t offset)
 {
 	size_t			maxfiles = get_finfo_buf_size();
 	finfo_t			*files = get_finfo_buf(maxfiles);
@@ -40,7 +41,7 @@ static finfo_t	*get_dir(char *path, size_t pathlen, const fopts_t *opts, size_t 
 		{
 			int	ret;
 
-			if (nfiles >= maxfiles)
+			if (offset + nfiles >= maxfiles)
 			{
 				maxfiles = (maxfiles) ? maxfiles * 2 : 32;
 				files = get_finfo_buf(maxfiles);
@@ -51,7 +52,7 @@ static finfo_t	*get_dir(char *path, size_t pathlen, const fopts_t *opts, size_t 
 				}
 			}
 			append_filename(path, pathlen, file->d_name);
-			ret = fill_finfo(path, file->d_name, opts, files + nfiles++);
+			ret = fill_finfo(path, file->d_name, opts, files + offset + nfiles++);
 			path[pathlen] = '\0';
 			if (ret == 2 && nfiles)
 				--nfiles;
@@ -71,13 +72,24 @@ static inline void	printpath(char *path, size_t pathlen)
 	path[pathlen] = '\0';
 }
 
+//a la suite du malloc, agrandir le premier
+static int	list_subdir_entries(char *path, size_t pathlen, const fopts_t *fopts,
+			const dopts_t *dopts, size_t offset)
+{
+}
+
+#define OFFSET 13
+
 int	list_dir_entries(char *path, size_t pathlen, const fopts_t *fopts, const dopts_t *dopts,
 	bool print_path, bool recursive)
 {
 	size_t	nfile = 0;
-	finfo_t	*finfos = get_dir(path, pathlen, fopts, &nfile);
+	finfo_t	*finfos = get_dir(path, pathlen, fopts, &nfile, OFFSET);
 	finfo_t	**finfos_ptr;
 	dinfo_t	max_dinfo = {0};
+	size_t	ndirs = 0;
+	size_t	dir_found = 0;
+	int		err = 0;
 
 	if (nfile == -1ULL)
 	{
@@ -92,13 +104,25 @@ int	list_dir_entries(char *path, size_t pathlen, const fopts_t *fopts, const dop
 		printpath(path, pathlen);
 	for (size_t i = 0; i < nfile; ++i)
 	{
-		finfos_ptr[i] = finfos + i;
-		update_dinfo(&max_dinfo, &finfos[i].dinfo);
+		finfos_ptr[i] = finfos + i + OFFSET;
+		ndirs+= finfos_ptr[i]->isdir;
+		update_dinfo(&max_dinfo, &finfos[i + OFFSET].dinfo);
 	}
 	if (dopts->cmpfunc)
 		ft_qsort_ptr(finfos_ptr, nfile, dopts->cmpfunc);
 	print_finfo(path, pathlen, finfos_ptr, nfile, dopts, &max_dinfo);
-	return 0;
+	if (!recursive)
+		return 0;
+	for (size_t i = 0; dir_found < ndirs && i < nfile; ++i)
+	{
+		if (!finfos_ptr[i]->isdir)
+			continue;
+		append_filename(path, pathlen, finfos_ptr[i]->name);
+		err |= list_subdir_entries(path, ft_strlen(path), fopts, dopts, nfile); 
+		path[pathlen] = '\0';
+		if (err &= 2)
+			return 4;
+	}
+	return err;
 }
 
-//list subdirs that returns 1 ?
