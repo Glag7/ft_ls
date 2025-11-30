@@ -95,6 +95,7 @@ void	fill_display_opts(const size_t *opts, dopts_t *display_opts)
 #include <string.h>
 #include "utils.h"
 #include "fileinfo.h"
+#include "manage_finfo.h"
 #include <sys/stat.h>
 
 
@@ -105,7 +106,7 @@ void	fill_display_opts(const size_t *opts, dopts_t *display_opts)
 
 void	print_line(finfo_t *finfo, const dopts_t *dopts, const dinfo_t *max_dinfo)
 {	
-	static char		buf[8192];
+	static char		buf[262144];
 	const dinfo_t	*file_dinfo = &finfo->dinfo;
 	size_t			i = 0;
 	
@@ -158,15 +159,9 @@ void	print_line(finfo_t *finfo, const dopts_t *dopts, const dinfo_t *max_dinfo)
 	//where \0
 	write(1, buf, i + 1);
 }
+//plusieurs args si dossier mettre le nom
 
-//PADDING
-//TODO ACL
-//TODO file type (d l p etc)
-//d directory
-//b block device
-//c character device
-//l link
-//s socket
+//TODO un seul buffer de fileinfo de malloc, le free a la fin et le realloc si besoin
 int	print_finfo(finfo_t	*finfos, size_t n, const dopts_t *dopts, const dinfo_t *max_dinfo)
 {
 	finfo_t	**finfos_ptr = malloc((n + 1) * sizeof(finfos));
@@ -194,48 +189,83 @@ int	print_finfo(finfo_t	*finfos, size_t n, const dopts_t *dopts, const dinfo_t *
 	return 0;
 }
 
-//plusieurs args si dossier mettre le nom
-
-//TODO un seul buffer de fileinfo de malloc, le free a la fin et le realloc si besoin
-
-#include "manage_finfo.h"
-
-int	main(int argc, char **argv)//FIXME symlinks are followed for args (if no columns)
+//return 2 if dir cant be opened (make a func list subdirs that returns 1)
+int	list_dirs(bool recursive)
 {
-	static char	path[131072];
+//	static char	path[262144];
+	//	print_finfo(files, i, &dopts, &max_dinfo);
+//	if (dopts->cmpfunc)
+//		ft_qsort_ptr(files_ptr, , dopts->cmpfunc);
+	return 0;
+}
+
+int	print_finfo_args()
+{
+//	finfo_t		*files_ptr = malloc(nargs * sizeof(finfo_t *));
+//	dinfo_t		max_dinfo = {0};
+//
+//			//treat as file
+//			ret = fill_finfo(args[i], args[i], &fopts, files + i);
+//			//update_dinfo(&max_dinfo, &files[i].dinfo);//XXX
+//	if (dopts->cmpfunc)
+//		ft_qsort_ptr(files_ptr, , dopts->cmpfunc);
+}
+
+int	list_args(char **args, size_t nargs, fopts_t *fopts, dopts_t *dopts, bool recursive)
+{
+	finfo_t		*files = malloc(nargs * sizeof(finfo_t));
+	finfo_t		*dirs = malloc(nargs * sizeof(finfo_t));
+	size_t		nfiles = 0;
+	size_t		ndirs = 0;
+	int			err = 0;
+	int			ret = 0;
+
+	if (files == NULL || dirs == NULL)
+	{
+		free(files);
+		free(dirs);
+		ft_printerr(2, "malloc failed", strerror(errno));
+		return 2;
+	}
+	for (size_t i = 0; i < nargs; ++i)
+	{
+		if (fill_finfo_arg(args[i], args[i], fopts, dirs + ndirs))
+		{
+			ft_printerr(2, "cannot access", strerror(errno));
+			err = 2;
+			continue;
+		}
+		if (dirs[ndirs].isdir && !(dopts->columns && dirs[ndirs].symlink))
+			ndirs++;
+		else
+			files[nfiles++] = dirs[ndirs];
+	}
+	if (nfiles)
+		ret = print_finfo_args();
+	if (ret != 2)
+	{
+		err |= ret;
+		err |= list_dirs(recursive);
+	}
+	free(files);
+	free(dirs);
+	if (err & 2)
+		return 2;
+	return err;
+}
+
+int	main(int argc, char **argv)
+{
 	char		**args = argv;
 	size_t		opts[255] = {0};
 	size_t		nargs;
-	int			err;
 	fopts_t		fopts;
 	dopts_t		dopts;
 
-	err = extract_opts(argc, argv, opts);
-	if (err)
-		return err;
+	if (extract_opts(argc, argv, opts))
+		return 2;
 	nargs = extract_args(argc, args);
-	printf("THERE ARE %llu args\n", nargs);
 	fill_file_opts(opts, &fopts);
 	fill_display_opts(opts, &dopts);
-
-	//sort les args
-	//return 2 si un des arsg pas accessibles (pas un dossier)
-	//return 1 si erreur mineure (subfolder)
-	finfo_t	*files = malloc(1000);
-	dinfo_t	max_dinfo = {0};
-
-	int i;
-	for (i = 0; args[i]; ++i)
-	{
-		files[i].name = args[i];
-		fill_finfo(args[i], args[i], &fopts, files + i);//returns 1 if minor error, 2 if no stat
-		update_dinfo(&max_dinfo, &files[i].dinfo);
-		printf("%s\n", args[i]);
-	}
-	printf("GRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR\n");
-	print_finfo(files, i, &dopts, &max_dinfo);
-	free(files);
-	
-	printf("%lu %lu\n", sizeof(finfo_t), sizeof(off_t));
-	return 0;
+	return list_args(args, nargs, &fopts, &dopts, opts['R']);
 }

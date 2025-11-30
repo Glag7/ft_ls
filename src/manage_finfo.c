@@ -72,7 +72,7 @@ static void	fill_perms(const char *path, char *perms, mode_t mode)
 	perms[11] = '\0';
 }
 
-static int	fill_owner(char *buf, uid_t owner, char *filename)
+static int	fill_owner(char *buf, uid_t owner, const char *path)
 {
 	struct passwd	*user;
 
@@ -81,14 +81,14 @@ static int	fill_owner(char *buf, uid_t owner, char *filename)
 	if (user == NULL)
 	{
 		buf[0] = '\0';
-		ft_printerr(3, "cannot access owner for", filename, strerror(errno));
+		ft_printerr(3, "cannot access owner for", path, strerror(errno));
 		return 1;
 	}
 	ft_memcpy(buf, user->pw_name, ft_strlen(user->pw_name) + 1);
 	return 0;
 }
 
-static int	fill_group(char *buf, gid_t group, char *filename)
+static int	fill_group(char *buf, gid_t group, const char *path)
 {
 	struct group	*grp_struct;
 	
@@ -97,7 +97,7 @@ static int	fill_group(char *buf, gid_t group, char *filename)
 	if (grp_struct == NULL)
 	{
 		buf[0] = '\0';
-		ft_printerr(3, "cannot access owner for", filename, strerror(errno));
+		ft_printerr(3, "cannot access owner for", path, strerror(errno));
 		return 1;
 	}
 	ft_memcpy(buf, grp_struct->gr_name, ft_strlen(grp_struct->gr_name) + 1);
@@ -112,6 +112,31 @@ static void	fill_dinfo(finfo_t *finfo, dinfo_t *dinfo)
 	dinfo->grouplen = ft_strlen(finfo->group);
 	dinfo->sizelen = ft_numlen(finfo->size);
 	dinfo->namelen = ft_strlen(finfo->name);
+}
+
+int	fill_finfo_arg(const char *path, char *name, const fopts_t *opts, finfo_t *finfo)
+{
+	struct stat	buf;
+
+	finfo->name = name;
+	finfo->isdir = false;
+	finfo->symlink = false;
+	finfo->lastmod.tv_sec = (long)-1;
+	finfo->lastmod.tv_nsec = (long)-1;
+	errno = 0;
+	if (lstat(path, &buf))
+	{
+		ft_printerr(3, "cannot access", path, strerror(errno));
+		return 2;
+	}
+	if (S_ISLNK(buf.st_mode))
+		finfo->symlink = true;
+	if (opts->lastmod)
+		finfo->lastmod = buf.st_mtim;
+	if (!opts->dir_as_file && S_ISDIR(buf.st_mode))
+		finfo->isdir = true;
+	fill_dinfo(finfo, &finfo->dinfo);
+	return 0;
 }
 
 int	fill_finfo(const char *path, char *name, const fopts_t *opts, finfo_t *finfo)
@@ -132,13 +157,13 @@ int	fill_finfo(const char *path, char *name, const fopts_t *opts, finfo_t *finfo
 	errno = 0;
 	if (lstat(path, &buf))
 	{
-		ft_printerr(3, "cannot get info for file", name, strerror(errno));
+		ft_printerr(3, "cannot get info for file", path, strerror(errno));
 		return 2;
 	}
 	if (opts->owner)
-		err |= fill_owner(finfo->owner, buf.st_uid, name);
+		err |= fill_owner(finfo->owner, buf.st_uid, path);
 	if (opts->group)
-		err |= fill_group(finfo->group, buf.st_gid, name);
+		err |= fill_group(finfo->group, buf.st_gid, path);
 	if (opts->data)
 	{
 		finfo->nlinks = buf.st_nlink;
