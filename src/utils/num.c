@@ -84,17 +84,17 @@ void	ft_fillnum_human(char *s, size_t num, size_t numlen)
 		return ft_fillnum(s, num, numlen);
 	switch (reallen % 3)
 	{
-		case 0://3
+		case 0:
 			if (num % pow10[reallen - 3] >= 1)
 				num += pow10[reallen - 2];
 			ft_fillnum(s, num / pow10[reallen - 2], 3);
 			break;
-		case 1://2
+		case 1:
 			s[0] = num / pow10[reallen] + '0';
 			s[1] = '.';
 			s[2] = (num / pow10[reallen - 1]) % 10 + '0' + (num % pow10[reallen - 2] >= 1);
 			break;
-		case 2://2
+		case 2:
 			s[0] = num / pow10[reallen] + '0';
 			s[1] = (num / pow10[reallen - 1]) % 10 + '0' + (num % pow10[reallen - 2] >= 1);
 			break;
