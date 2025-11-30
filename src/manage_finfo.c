@@ -117,7 +117,7 @@ static void	fill_dinfo(finfo_t *finfo, dinfo_t *dinfo, bool humansize)
 		if (dinfo->sizelen <= 3)
 			return;
 		dinfo->sizelen = dinfo->sizelen % 3;
-		dinfo->sizelen = 4 - (dinfo->sizelen == 1);
+		dinfo->sizelen = 4 - (dinfo->sizelen == 2);
 	}
 }
 

@@ -51,3 +51,53 @@ size_t	ft_numlen(size_t num)
 		return 19;
 	return 20;
 }
+
+void	ft_fillnum_human(char *s, size_t num, size_t numlen)
+{
+	static const size_t	pow10[] = {
+	0ULL,
+	1ULL,
+	10ULL,
+	100ULL,
+	1000ULL,
+	10000ULL,
+	100000ULL,
+	1000000ULL,
+	10000000ULL,
+	100000000ULL,
+	1000000000ULL,
+	10000000000ULL,
+	100000000000ULL,
+	1000000000000ULL,
+	10000000000000ULL,
+	100000000000000ULL,
+	1000000000000000ULL,
+	10000000000000000ULL,
+	100000000000000000ULL,
+	1000000000000000000ULL,
+	10000000000000000000ULL,
+	};
+	static const char	prefix[] = "????KKKMMMGGGTTTPPPEEEZZZ";
+	size_t				reallen = ft_numlen(num);
+
+	if (reallen <= 3)
+		return ft_fillnum(s, num, numlen);
+	switch (reallen % 3)
+	{
+		case 0://3
+			if (num % pow10[reallen - 3] >= 1)
+				num += pow10[reallen - 2];
+			ft_fillnum(s, num / pow10[reallen - 2], 3);
+			break;
+		case 1://2
+			s[0] = num / pow10[reallen] + '0';
+			s[1] = '.';
+			s[2] = (num / pow10[reallen - 1]) % 10 + '0' + (num % pow10[reallen - 2] >= 1);
+			break;
+		case 2://2
+			s[0] = num / pow10[reallen] + '0';
+			s[1] = (num / pow10[reallen - 1]) % 10 + '0' + (num % pow10[reallen - 2] >= 1);
+			break;
+	}
+	s[numlen - 1] = prefix[reallen];
+}

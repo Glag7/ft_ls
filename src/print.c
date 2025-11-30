@@ -28,8 +28,10 @@ void	print_line(finfo_t *finfo, const dopts_t *dopts, const dinfo_t *max_dinfo)
 		ft_memcpy(buf + i, finfo->group, file_dinfo->grouplen);
 		i += file_dinfo->grouplen;
 		buf[i++] = ' ';//XXX
-		//TODO humansize (doit etre fait avant) (<=4)
-		ft_fillnum(buf + i, finfo->size, file_dinfo->sizelen);
+		if (dopts->humansize)
+			ft_fillnum_human(buf + i, finfo->size, file_dinfo->sizelen);
+		else
+			ft_fillnum(buf + i, finfo->size, file_dinfo->sizelen);
 		i += file_dinfo->sizelen;
 		buf[i++] = ' ';//XXX
 		
