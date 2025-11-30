@@ -13,6 +13,7 @@ typedef struct fopts_s
 	bool	lastmod;
 	bool	data;
 	bool	dir_as_file;
+	bool	humansize;
 }	fopts_t;
 
 typedef struct displayopts_s

@@ -10,6 +10,7 @@ void	fill_file_opts(const size_t *opts, fopts_t *file_opts)
 	file_opts->group = (opts['l'] || opts['g']) && !opts['o'];
 	file_opts->lastmod = opts['l'] || opts['g'] || opts['o'] || opts['t'];
 	file_opts->dir_as_file = opts['d'];
+	file_opts->humansize = opts['h'];
 }
 
 void	fill_display_opts(const size_t *opts, dopts_t *display_opts)

@@ -104,7 +104,7 @@ static int	fill_group(char *buf, gid_t group, const char *path)
 	return 0;
 }
 
-static void	fill_dinfo(finfo_t *finfo, dinfo_t *dinfo)
+static void	fill_dinfo(finfo_t *finfo, dinfo_t *dinfo, bool humansize)
 {
 	dinfo->permlen = ft_strlen(finfo->perms);
 	dinfo->nlinklen = ft_numlen(finfo->nlinks);
@@ -112,6 +112,13 @@ static void	fill_dinfo(finfo_t *finfo, dinfo_t *dinfo)
 	dinfo->grouplen = ft_strlen(finfo->group);
 	dinfo->sizelen = ft_numlen(finfo->size);
 	dinfo->namelen = ft_strlen(finfo->name);
+	if (humansize)
+	{
+		if (dinfo->sizelen <= 3)
+			return;
+		dinfo->sizelen = dinfo->sizelen % 3;
+		dinfo->sizelen = 4 - (dinfo->sizelen == 1);
+	}
 }
 
 int	fill_finfo_arg(const char *path, char *name, const fopts_t *opts, finfo_t *finfo)
@@ -180,7 +187,7 @@ int	fill_finfo(const char *path, char *name, const fopts_t *opts, finfo_t *finfo
 		finfo->lastmod = buf.st_mtim;
 	if (!opts->dir_as_file && S_ISDIR(buf.st_mode))
 		finfo->isdir = true;
-	fill_dinfo(finfo, &finfo->dinfo);
+	fill_dinfo(finfo, &finfo->dinfo, opts->humansize);
 	return err;
 }
 
