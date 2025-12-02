@@ -104,8 +104,12 @@ int	list_sudir_entries(char *path, size_t pathlen, const fopts_t *fopts, const d
 		if (!finfos_ptr[i]->isdir)
 			continue;
 		append_filename(path, pathlen, finfos_ptr[i]->name);
-		err |= list_sudir_entries(path, pathlen + finfos_ptr[i]->dinfo.namelen, fopts, dopts,
+		write(1, "\n", 1);
+		err |= list_sudir_entries(path, pathlen + finfos_ptr[i]->dinfo.namelen + 1, fopts, dopts,
 								nfile);
+		set_buf_offset(offset);
+		finfos_ptr = get_finfoptr_buf(nfile);
+		set_buf_offset(nfile + offset);
 		path[pathlen] = '\0';
 		if (err & 4)
 			break;
@@ -139,6 +143,11 @@ int	list_dir_entries(char *path, size_t pathlen, const fopts_t *fopts, const dop
 	for (size_t i = 0; i < nfile; ++i)
 	{
 		finfos_ptr[i] = finfos + i;
+		if (!print_path && recursive && finfos[i].isdir)
+		{
+			print_path = true;
+			printpath(path, pathlen);
+		}
 		update_dinfo(&max_dinfo, &finfos[i].dinfo);
 	}
 	if (dopts->cmpfunc)
@@ -146,14 +155,18 @@ int	list_dir_entries(char *path, size_t pathlen, const fopts_t *fopts, const dop
 	print_finfo(path, pathlen, finfos_ptr, nfile, dopts, &max_dinfo);
 	if (!recursive)
 		return 0;
-	set_buf_offset(nfile);
 	for (size_t i = 0; i < nfile; ++i)
 	{
 		if (!finfos_ptr[i]->isdir)
 			continue;
 		append_filename(path, pathlen, finfos_ptr[i]->name);
-		err |= list_sudir_entries(path, pathlen + finfos_ptr[i]->dinfo.namelen, fopts, dopts,
+		write(1, "\n", 1);
+		set_buf_offset(nfile);
+		err |= list_sudir_entries(path, pathlen + finfos_ptr[i]->dinfo.namelen + 1, fopts, dopts,
 								nfile);
+		set_buf_offset(0);
+		finfos_ptr = get_finfoptr_buf(nfile);
+		set_buf_offset(nfile);
 		path[pathlen] = '\0';
 		if (err & 4)
 			break;
@@ -163,3 +176,6 @@ int	list_dir_entries(char *path, size_t pathlen, const fopts_t *fopts, const dop
 		return 4;
 	return err & 1;
 }
+
+//FIXME bad finfoptr
+//FIXME higher def size

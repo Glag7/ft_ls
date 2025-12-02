@@ -68,10 +68,10 @@ finfo_t	*get_finfo_buf(size_t size)
 	else
 	{
 		//change_ptr
-		printf("wtf\n");
+		//printf("wtf\n");
 		for (size_t i = 0; i < fbuf->finfoptr_size; ++i)
 		{
-			printf("INDEX IS %llu\n", fbuf->finfoptr_buf[i] - tmp);
+		//	printf("INDEX IS %llu\n", fbuf->finfoptr_buf[i] - tmp);
 			fbuf->finfoptr_buf[i] += (fbuf->finfo_buf - tmp);
 		}
 		ft_memcpy(tmp, fbuf->finfo_buf, fbuf->finfo_size * sizeof(finfo_t));
@@ -84,7 +84,7 @@ finfo_t	*get_finfo_buf(size_t size)
 
 finfo_t	**get_finfoptr_buf(size_t size)
 {
-	printf("HELLO\n");
+//	printf("HELLO\n");
 	struct finfo_buf	*fbuf = getstruct();
 	finfo_t				**tmp;
 	size_t				offset = fbuf->offset;
