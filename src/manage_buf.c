@@ -72,8 +72,8 @@ finfo_t	*get_finfo_buf(size_t size)
 		//printf("wtf\n");
 		for (size_t i = 0; i < fbuf->finfoptr_size; ++i)
 		{
-		//	printf("INDEX IS %llu\n", fbuf->finfoptr_buf[i] - tmp);
-			fbuf->finfoptr_buf[i] += (fbuf->finfo_buf - tmp);
+		//	printf("INDEX IS %llu\n", fbuf->finfoptr_buf[i] - fbuf->finfo_buf);
+			fbuf->finfoptr_buf[i] = tmp + (fbuf->finfoptr_buf[i] - fbuf->finfo_buf);
 		}
 		ft_memcpy(tmp, fbuf->finfo_buf, fbuf->finfo_size * sizeof(finfo_t));
 		free(fbuf->finfo_buf);
@@ -97,10 +97,7 @@ finfo_t	**get_finfoptr_buf(size_t size)
 		fbuf->finfoptr_size = 0;
 	}
 	if (fbuf->finfoptr_size >= size + offset)
-	{
-		printf("YES\n");
 		return fbuf->finfoptr_buf + offset;
-	}
 	tmp = malloc((size + offset) * sizeof(finfo_t *));
 	if (tmp == NULL)
 	{

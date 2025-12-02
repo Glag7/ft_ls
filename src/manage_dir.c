@@ -106,7 +106,7 @@ int	list_subdir_entries(char *path, size_t pathlen, const fopts_t *fopts, const 
 		write(1, "\n", 1);
 		set_buf_offset(offset + nfile);
 		err |= list_subdir_entries(path, pathlen + finfos_ptr[i]->dinfo.namelen + 1, fopts, dopts,
-								nfile);
+								offset + nfile);
 		set_buf_offset(offset);
 		finfos_ptr = get_finfoptr_buf(nfile);
 		path[pathlen] = '\0';
@@ -164,7 +164,6 @@ int	list_dir_entries(char *path, size_t pathlen, const fopts_t *fopts, const dop
 								nfile);
 		set_buf_offset(0);
 		finfos_ptr = get_finfoptr_buf(nfile);
-		set_buf_offset(nfile);
 		path[pathlen] = '\0';
 		if (err & 4)
 			break;
@@ -174,6 +173,3 @@ int	list_dir_entries(char *path, size_t pathlen, const fopts_t *fopts, const dop
 		return 4;
 	return err & 1;
 }
-
-//FIXME bad finfoptr
-//FIXME higher def size

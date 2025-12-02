@@ -77,7 +77,7 @@ void	ft_fillnum_human(char *s, size_t num, size_t numlen)
 	1000000000000000000ULL,
 	10000000000000000000ULL,
 	};
-	static const char	prefix[] = "????KKKMMMGGGTTTPPPEEEZZZ";
+	static const char	prefix[] = "????kkkMMMGGGTTTPPPEEEZZZ";
 	size_t				reallen = ft_numlen(num);
 
 	if (reallen <= 3)
