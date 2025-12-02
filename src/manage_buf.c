@@ -58,7 +58,13 @@ finfo_t	*get_finfo_buf(size_t size)
 	}
 	else
 	{
-		ft_memcpy(tmp, fbuf->finfo_buf, fbuf->finfo_size);
+		//change_ptr
+		printf("wtf\n");
+		for (size_t i = 0; i < fbuf->finfoptr_size; ++i)
+		{
+			printf("INDEX IS %llu\n", fbuf->finfoptr_buf[i] - tmp);
+		}
+		ft_memcpy(tmp, fbuf->finfo_buf, fbuf->finfo_size * sizeof(finfo_t));
 		free(fbuf->finfo_buf);
 		fbuf->finfo_buf = tmp;
 		fbuf->finfo_size = size;
@@ -68,6 +74,7 @@ finfo_t	*get_finfo_buf(size_t size)
 
 finfo_t	**get_finfoptr_buf(size_t size)
 {
+	printf("HELLO\n");
 	struct finfo_buf	*fbuf = getstruct();
 	finfo_t				**tmp;
 
@@ -89,7 +96,7 @@ finfo_t	**get_finfoptr_buf(size_t size)
 	}
 	else
 	{
-		ft_memcpy(tmp, fbuf->finfoptr_buf, fbuf->finfoptr_size);
+		ft_memcpy(tmp, fbuf->finfoptr_buf, fbuf->finfoptr_size * sizeof(finfo_t *));
 		free(fbuf->finfoptr_buf);
 		fbuf->finfoptr_buf = tmp;
 		fbuf->finfoptr_size = size;
