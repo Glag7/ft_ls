@@ -177,6 +177,7 @@ int	fill_finfo(const char *path, char *name, const fopts_t *opts, finfo_t *finfo
 		err |= fill_group(finfo->group, buf.st_gid, path);
 	if (opts->data)
 	{
+		finfo->blocks = buf.st_blocks;
 		finfo->nlinks = buf.st_nlink;
 		finfo->size = buf.st_size;
 		if (S_ISLNK(buf.st_mode))

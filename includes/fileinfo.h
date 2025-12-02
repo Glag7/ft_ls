@@ -22,6 +22,7 @@ typedef struct	finfo_s
 	struct timespec		lastmod;
 	nlink_t				nlinks;
 	off_t				size;
+	blkcnt_t			blocks;
 	dinfo_t				dinfo;
 	bool				isdir;
 	bool				symlink;

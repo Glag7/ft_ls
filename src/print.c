@@ -89,23 +89,46 @@ int	print_finfo_args(finfo_t *files, size_t nfiles, const fopts_t *fopts, const 
 	return err;
 }
 
-//need path, update it with filename
+static void	print_totsize(size_t tot_size, bool humansize)
+{
+	static char	buf[255];
+	size_t	sizelen;
+	
+	if (humansize)
+	{
+		tot_size *= 512;
+		sizelen = ft_numlen(tot_size);
+		ft_memcpy(buf, "total ", 6);
+		if (sizelen > 3)
+		{
+			sizelen = sizelen % 3;
+			sizelen = 4 - (sizelen == 2);
+		}
+		ft_fillnum_human(buf + 6, tot_size, sizelen);
+		buf[6 + sizelen] = '\n';
+		write(1, buf, 7 + sizelen);
+	}
+	else
+	{
+		tot_size /= 2;
+		sizelen = ft_numlen(tot_size);
+		ft_memcpy(buf, "total ", 6);
+		ft_fillnum(buf + 6, tot_size, sizelen);
+		buf[6 + sizelen] = '\n';
+		write(1, buf, 7 + sizelen);
+	}
+}
+
 int	print_finfo(char *path, size_t pathlen, finfo_t	**finfos_ptr, size_t n, const dopts_t *dopts,
 			const dinfo_t *max_dinfo)
 {
-	static char	buf[255];
 	size_t		tot_size = 0;
 
 	if (dopts->columns)
 	{
-		size_t	sizelen = ft_numlen(tot_size);
-
 		for (size_t i = 0; i < n; ++i)
-			tot_size += finfos_ptr[i]->size;
-		ft_memcpy(buf, "total ", 6);
-		ft_fillnum(buf + 7, tot_size, sizelen);
-		buf[7 + sizelen] = '\n';
-		write(1, buf, 8 + sizelen);
+			tot_size += finfos_ptr[i]->blocks;
+		print_totsize(tot_size, dopts->humansize);
 	}
 	for (size_t i = 0; i < n; ++i)
 	{
