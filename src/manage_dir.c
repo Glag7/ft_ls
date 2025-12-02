@@ -71,6 +71,51 @@ static inline void	printpath(char *path, size_t pathlen)
 	path[pathlen] = '\0';
 }
 
+int	list_sudir_entries(char *path, size_t pathlen, const fopts_t *fopts, const dopts_t *dopts,
+	size_t offset)
+{
+	size_t	nfile = 0;
+	finfo_t	*finfos = get_dir(path, pathlen, fopts, &nfile);
+	finfo_t	**finfos_ptr;
+	dinfo_t	max_dinfo = {0};
+	int		err = 0;
+
+	if (nfile == -1ULL)
+	{
+		if (errno == ENOMEM)
+			return 4;
+		return 1;
+	}
+	finfos_ptr = get_finfoptr_buf(nfile);
+	if (finfos_ptr == NULL)
+		return 4;
+	printpath(path, pathlen);
+	for (size_t i = 0; i < nfile; ++i)
+	{
+		finfos_ptr[i] = finfos + i;
+		update_dinfo(&max_dinfo, &finfos[i].dinfo);
+	}
+	if (dopts->cmpfunc)
+		ft_qsort_ptr(finfos_ptr, nfile, dopts->cmpfunc);
+	print_finfo(path, pathlen, finfos_ptr, nfile, dopts, &max_dinfo);
+	set_buf_offset(offset + nfile);
+	for (size_t i = 0; i < nfile; ++i)
+	{
+		if (!finfos_ptr[i]->isdir)
+			continue;
+		append_filename(path, pathlen, finfos_ptr[i]->name);
+		err |= list_sudir_entries(path, pathlen + finfos_ptr[i]->dinfo.namelen, fopts, dopts,
+								nfile);
+		path[pathlen] = '\0';
+		if (err & 4)
+			break;
+	}
+	set_buf_offset(offset);
+	if (err & 4)
+		return 4;
+	return err & 1;
+}
+
 int	list_dir_entries(char *path, size_t pathlen, const fopts_t *fopts, const dopts_t *dopts,
 	bool print_path, bool recursive)
 {
@@ -78,6 +123,7 @@ int	list_dir_entries(char *path, size_t pathlen, const fopts_t *fopts, const dop
 	finfo_t	*finfos = get_dir(path, pathlen, fopts, &nfile);
 	finfo_t	**finfos_ptr;
 	dinfo_t	max_dinfo = {0};
+	int		err = 0;
 
 	if (nfile == -1ULL)
 	{
@@ -98,8 +144,22 @@ int	list_dir_entries(char *path, size_t pathlen, const fopts_t *fopts, const dop
 	if (dopts->cmpfunc)
 		ft_qsort_ptr(finfos_ptr, nfile, dopts->cmpfunc);
 	print_finfo(path, pathlen, finfos_ptr, nfile, dopts, &max_dinfo);
-	return 0;
+	if (!recursive)
+		return 0;
+	set_buf_offset(nfile);
+	for (size_t i = 0; i < nfile; ++i)
+	{
+		if (!finfos_ptr[i]->isdir)
+			continue;
+		append_filename(path, pathlen, finfos_ptr[i]->name);
+		err |= list_sudir_entries(path, pathlen + finfos_ptr[i]->dinfo.namelen, fopts, dopts,
+								nfile);
+		path[pathlen] = '\0';
+		if (err & 4)
+			break;
+	}
+	set_buf_offset(0);
+	if (err & 4)
+		return 4;
+	return err & 1;
 }
-//TODO recursion, ajouter une queue de char * a aller check ?
-//TODO block size
-//list subdirs that returns 1 ?
