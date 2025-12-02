@@ -64,6 +64,7 @@ finfo_t	*get_finfo_buf(size_t size)
 		free(fbuf->finfo_buf);
 		fbuf->finfo_buf = NULL;
 		fbuf->finfo_size = 0;
+		return NULL;
 	}
 	else
 	{
@@ -96,7 +97,10 @@ finfo_t	**get_finfoptr_buf(size_t size)
 		fbuf->finfoptr_size = 0;
 	}
 	if (fbuf->finfoptr_size >= size + offset)
+	{
+		printf("YES\n");
 		return fbuf->finfoptr_buf + offset;
+	}
 	tmp = malloc((size + offset) * sizeof(finfo_t *));
 	if (tmp == NULL)
 	{
@@ -104,6 +108,7 @@ finfo_t	**get_finfoptr_buf(size_t size)
 		free(fbuf->finfoptr_buf);
 		fbuf->finfoptr_buf = NULL;
 		fbuf->finfoptr_size = 0;
+		return NULL;
 	}
 	else
 	{
