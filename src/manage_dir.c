@@ -14,6 +14,7 @@
 
 void	append_filename(char *path, size_t pathlen, char *filename)
 {
+	pathlen = ft_strlen(path);
 	if (path[pathlen - 1] != '/')
 		path[pathlen++] = '/';
 	ft_memcpy(path + pathlen, filename, ft_strlen(filename) + 1);
@@ -42,7 +43,7 @@ static finfo_t	*get_dir(char *path, size_t pathlen, const fopts_t *opts, size_t 
 
 			if (nfiles >= maxfiles)
 			{
-				maxfiles = (maxfiles) ? maxfiles * 2 : 2;
+				maxfiles = (maxfiles) ? maxfiles * 2 : 256;
 				files = get_finfo_buf(maxfiles);
 				if (files == NULL)
 				{
@@ -87,7 +88,7 @@ int	list_subdir_entries(char *path, size_t pathlen, const fopts_t *fopts, const 
 		return 1;
 	}
 	finfos_ptr = get_finfoptr_buf(nfile);
-	if (finfos_ptr == NULL)//peut etre les fichiers pas marche ??
+	if (finfos_ptr == NULL)
 		return 4;
 	printpath(path, pathlen);
 	for (size_t i = 0; i < nfile; ++i)
@@ -100,7 +101,9 @@ int	list_subdir_entries(char *path, size_t pathlen, const fopts_t *fopts, const 
 	print_finfo(path, pathlen, finfos_ptr, nfile, dopts, &max_dinfo);
 	for (size_t i = 0; i < nfile; ++i)
 	{
-		if (!finfos_ptr[i]->isdir)
+		if (!finfos_ptr[i]->isdir || (finfos_ptr[i]->name[0] == '.'
+			&& (finfos_ptr[i]->name[1] == '\0' || (finfos_ptr[i]->name[1] == '.'
+												&& finfos_ptr[i]->name[2] == '\0'))))
 			continue;
 		append_filename(path, pathlen, finfos_ptr[i]->name);
 		write(1, "\n", 1);
@@ -155,7 +158,9 @@ int	list_dir_entries(char *path, size_t pathlen, const fopts_t *fopts, const dop
 		return 0;
 	for (size_t i = 0; i < nfile; ++i)
 	{
-		if (!finfos_ptr[i]->isdir)
+		if (!finfos_ptr[i]->isdir || (finfos_ptr[i]->name[0] == '.'
+			&& (finfos_ptr[i]->name[1] == '\0' || (finfos_ptr[i]->name[1] == '.'
+												&& finfos_ptr[i]->name[2] == '\0'))))
 			continue;
 		append_filename(path, pathlen, finfos_ptr[i]->name);
 		write(1, "\n", 1);
