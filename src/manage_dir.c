@@ -87,7 +87,7 @@ int	list_subdir_entries(char *path, size_t pathlen, const fopts_t *fopts, const 
 		return 1;
 	}
 	finfos_ptr = get_finfoptr_buf(nfile);
-	if (finfos_ptr == NULL)
+	if (finfos_ptr == NULL)//peut etre les fichiers pas marche ??
 		return 4;
 	printpath(path, pathlen);
 	for (size_t i = 0; i < nfile; ++i)

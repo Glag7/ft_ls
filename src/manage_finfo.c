@@ -81,7 +81,6 @@ static int	fill_owner(char *buf, uid_t owner, const char *path)
 	if (user == NULL)
 	{
 		buf[0] = '\0';
-		ft_printerr(3, "cannot access owner for", path, strerror(errno));
 		return 1;
 	}
 	ft_memcpy(buf, user->pw_name, ft_strlen(user->pw_name) + 1);
@@ -97,7 +96,6 @@ static int	fill_group(char *buf, gid_t group, const char *path)
 	if (grp_struct == NULL)
 	{
 		buf[0] = '\0';
-		ft_printerr(3, "cannot access owner for", path, strerror(errno));
 		return 1;
 	}
 	ft_memcpy(buf, grp_struct->gr_name, ft_strlen(grp_struct->gr_name) + 1);
