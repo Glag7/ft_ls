@@ -19,7 +19,7 @@ static void	print_line(const char *path, finfo_t *finfo,
 	if (dopts->columns)
 	{
 		ft_memset(buf, ' ', max_dinfo->permlen + max_dinfo->nlinklen + max_dinfo->userlen
-							+ max_dinfo->grouplen + max_dinfo->sizelen + max_dinfo->namelen + 20);
+							+ max_dinfo->grouplen + max_dinfo->sizelen + max_dinfo->namelen + 24);
 		ft_memcpy(buf + i, finfo->perms, file_dinfo->permlen);
 		i += max_dinfo->permlen + 1;
 		i += max_dinfo->nlinklen - file_dinfo->nlinklen;
