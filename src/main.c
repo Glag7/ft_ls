@@ -65,7 +65,6 @@ static int	list_args(char **args, size_t nargs, const fopts_t *fopts, const dopt
 	{
 		if (fill_finfo_arg(args[i], args[i], fopts, dirs + ndirs))
 		{
-			ft_printerr(2, "cannot access", strerror(errno));
 			err = 2;
 			continue;
 		}
