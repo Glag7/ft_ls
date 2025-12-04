@@ -90,6 +90,7 @@ int	list_subdir_entries(char *path, size_t pathlen, const fopts_t *fopts, const 
 	finfos_ptr = get_finfoptr_buf(nfile);
 	if (finfos_ptr == NULL)
 		return 4;
+	write(1, "\n", 1);
 	printpath(path, pathlen);
 	for (size_t i = 0; i < nfile; ++i)
 	{
@@ -106,7 +107,6 @@ int	list_subdir_entries(char *path, size_t pathlen, const fopts_t *fopts, const 
 												&& finfos_ptr[i]->name[2] == '\0'))))
 			continue;
 		append_filename(path, pathlen, finfos_ptr[i]->name);
-		write(1, "\n", 1);
 		set_buf_offset(offset + nfile);
 		err |= list_subdir_entries(path, pathlen + finfos_ptr[i]->dinfo.namelen + 1, fopts, dopts,
 								offset + nfile);
@@ -122,7 +122,7 @@ int	list_subdir_entries(char *path, size_t pathlen, const fopts_t *fopts, const 
 }
 
 int	list_dir_entries(char *path, size_t pathlen, const fopts_t *fopts, const dopts_t *dopts,
-	bool print_path, bool recursive)
+	bool print_path, bool print_nl, bool recursive)
 {
 	size_t	nfile = 0;
 	finfo_t	*finfos = get_dir(path, pathlen, fopts, &nfile);
@@ -140,7 +140,11 @@ int	list_dir_entries(char *path, size_t pathlen, const fopts_t *fopts, const dop
 	if (finfos_ptr == NULL)
 		return 4;
 	if (print_path)
+	{
+		if (print_nl)
+			write(1, "\n", 1);
 		printpath(path, pathlen);
+	}
 	for (size_t i = 0; i < nfile; ++i)
 	{
 		finfos_ptr[i] = finfos + i;
@@ -163,7 +167,6 @@ int	list_dir_entries(char *path, size_t pathlen, const fopts_t *fopts, const dop
 												&& finfos_ptr[i]->name[2] == '\0'))))
 			continue;
 		append_filename(path, pathlen, finfos_ptr[i]->name);
-		write(1, "\n", 1);
 		set_buf_offset(nfile);
 		err |= list_subdir_entries(path, pathlen + finfos_ptr[i]->dinfo.namelen + 1, fopts, dopts,
 								nfile);
