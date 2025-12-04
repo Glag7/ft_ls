@@ -12,7 +12,7 @@
 #include "manage_dir.h"
 
 static int	list_dirs(finfo_t *dirs, size_t ndirs, const fopts_t *fopts, const dopts_t *dopts,
-					bool recursive)
+					bool showdir, bool recursive)
 {
 	static char	path[262144];
 	finfo_t		**dir_ptr = malloc(ndirs * sizeof(finfo_t *));
@@ -32,7 +32,8 @@ static int	list_dirs(finfo_t *dirs, size_t ndirs, const fopts_t *fopts, const do
 		size_t	len = ft_strlen(dir_ptr[i]->name);
 
 		ft_memcpy(path, dir_ptr[i]->name, len + 1);
-		err |= list_dir_entries(path, len, fopts, dopts, ndirs > 1, i != 0, recursive);
+		err |= list_dir_entries(path, len, fopts, dopts, (ndirs > 1) || showdir, i != 0 || showdir,
+								recursive);
 		if (err & 4)//malloc error yes i should use a macro
 			break;
 	}
@@ -77,7 +78,7 @@ static int	list_args(char **args, size_t nargs, const fopts_t *fopts, const dopt
 	{
 		err |= ret;
 		if (ndirs)
-			err |= list_dirs(dirs, ndirs, fopts, dopts, recursive);
+			err |= list_dirs(dirs, ndirs, fopts, dopts, nfiles, recursive);
 	}
 	free(files);
 	free(dirs);
