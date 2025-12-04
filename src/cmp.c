@@ -24,8 +24,8 @@ ssize_t cmptime(const void *a, const void *b)
 	const struct timespec	timeb = ((finfo_t *)b)->lastmod;
 
 	if (timea.tv_sec != timeb.tv_sec)
-		return timea.tv_sec - timeb.tv_sec;
-	return timea.tv_nsec - timeb.tv_nsec;
+		return timeb.tv_sec - timea.tv_sec;
+	return timeb.tv_nsec - timea.tv_nsec;
 }
 
 ssize_t rcmptime(const void *a, const void *b)
